@@ -1,5 +1,4 @@
 <script>
-	export const ssr= false
 	import { onAuthStateChanged } from 'firebase/auth';
 	import { auth, db } from '$lib/firebase';
 	let Currentuser;
@@ -145,5 +144,10 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+	.btn.blue {
+		/* position:abslot. */
+		position: relative;
+		top: 40px;
 	}
 </style>

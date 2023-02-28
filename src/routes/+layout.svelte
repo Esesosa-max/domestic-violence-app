@@ -27,7 +27,7 @@
 		<li><a href="/new">New</a></li>
 	{:else}
 		<li><a href="/signup">Sign Up</a></li>
-		<!-- <li><a href="/login">Log In</a></li> -->
+		<li><a href="/login">Log In</a></li>
 	{/if}
 </ul>
 
