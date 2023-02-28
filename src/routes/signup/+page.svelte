@@ -12,10 +12,11 @@
 		e.preventDefault();
 		if (email && password && dept && password && level) {
 			console.log(email, username, dept, password, level);
-			if (email.includes('@mgt.uniben.edu') && !email.includes('admin')) {
-				createUserWithEmailAndPassword(auth, email, password)
+			if (email.includes('@mgtsci.uniben.edu') && !email.includes('admin')) {
+				createUserWithEmailAndPassword(auth, email.replace('.', ''), password)
 					.then((userCredential) => {
 						// Signed in
+						M.toast({ html: 'We Are Creating YOU, One Second' });
 						const user = userCredential.user;
 						updateProfile(auth.currentUser, {
 							displayName: dept
@@ -28,7 +29,8 @@
 									username: user.displayName,
 									level: level
 								});
-								redirect('/');
+								M.toast({ html: 'SignUP Successful' });
+								window.location.href = '/';
 								// ...
 							})
 							.catch((error) => {
