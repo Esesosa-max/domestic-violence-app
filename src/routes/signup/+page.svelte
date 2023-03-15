@@ -4,37 +4,44 @@
 	let dept;
 	let password;
 	let level;
-	import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+	import {
+		createUserWithEmailAndPassword,
+		updateProfile,
+		sendEmailVerification
+	} from 'firebase/auth';
 	import { auth, db } from '$lib/firebase.js';
 	import { doc, setDoc } from 'firebase/firestore';
 	import { redirect } from '@sveltejs/kit';
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (email && password && dept && password && level) {
-			console.log(email, username, dept, password, level);
-			if (email.includes('@mgt.uniben.edu') && !email.includes('admin')) {
-				createUserWithEmailAndPassword(auth, email, password)
+			console.log(email.replace('.', ''), username, dept, password, level);
+			if (email.includes('@mgtsci.uniben.edu') && !email.includes('admin')) {
+				createUserWithEmailAndPassword(auth, email.replace('.', ''), password)
 					.then((userCredential) => {
 						// Signed in
+						M.toast({ html: 'We Are Creating YOU, One Second' });
 						const user = userCredential.user;
 						updateProfile(auth.currentUser, {
 							displayName: dept
-						})
-							.then(async () => {
-								// Add a new document in collection "cities"
-								await setDoc(doc(db, 'users', user.email), {
-									email: user.email,
-									dept: dept,
-									username: user.displayName,
-									level: level
-								});
-								redirect('/');
-								// ...
-							})
-							.catch((error) => {
-								// An error occurred
-								// ...
+						}).then(async () => {
+							// Add a new document in collection "cities"
+							await setDoc(doc(db, 'users', user.email), {
+								email: user.email,
+								dept: dept,
+								username: user.displayName,
+								level: level
 							});
+
+							// ...
+						});
+
+						sendEmailVerification(auth.currentUser).then(() => {
+							// Email verification sent!
+							M.toast({ html: 'Email Verfication Mail Sent' });
+							// window.location.href = '';
+							// ...
+						});
 					})
 					.catch((error) => {
 						const errorCode = error.code;
