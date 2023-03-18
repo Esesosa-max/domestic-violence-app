@@ -16,9 +16,10 @@
 		e.preventDefault();
 		console.log(email, password);
 
-		signInWithEmailAndPassword(auth, email, password)
+		signInWithEmailAndPassword(auth, email.replace('.', '').trim(''), password)
 			.then((userCredential) => {
 				M.toast({ html: 'Login success' });
+				window.location('/');
 			})
 			.catch((error) => {
 				const errorCode = error.code;

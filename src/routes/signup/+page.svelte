@@ -17,7 +17,7 @@
 		if (email && password && dept && password && level) {
 			console.log(email.replace('.', ''), username, dept, password, level);
 			if (email.includes('@mgtsci.uniben.edu') && !email.includes('admin')) {
-				createUserWithEmailAndPassword(auth, email.replace('.', ''), password)
+				createUserWithEmailAndPassword(auth, email, password)
 					.then((userCredential) => {
 						// Signed in
 						M.toast({ html: 'We Are Creating YOU, One Second' });

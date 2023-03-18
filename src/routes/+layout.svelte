@@ -15,13 +15,11 @@
 <nav class="">
 	<div class="nav-wrapper container">
 		<a href="/" class="brand-logo">Suggestly</a>
-		{#if Cuser}
-			{#if !Cuser.email.includes('admin')}
-				<a href="#" data-target="mobile-demo" class="sidenav-trigger"
-					><i class="material-icons">menu</i></a
-				>
-			{/if}
-		{/if}
+
+		<a href="#" data-target="mobile-demo" class="sidenav-trigger"
+			><i class="material-icons">menu</i></a
+		>
+
 		<!-- <a href="/new">New</a> -->
 		<ul class="right hide-on-med-and-down">This website is not optimized for desktop yet!</ul>
 	</div>
