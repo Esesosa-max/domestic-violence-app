@@ -1,6 +1,5 @@
 <script>
-	export const ssr= false
-	import { onAuthStateChanged } from 'firebase/auth';
+	import { onAuthStateChanged, updateProfile } from 'firebase/auth';
 	import { auth, db } from '$lib/firebase';
 	let Currentuser;
 	let show = true;
@@ -30,7 +29,7 @@
 			const q = query(
 				collection(db, Currentuser.displayName),
 				orderBy('timestamp', 'desc'),
-				limit(2)
+				limit(3)
 			);
 			const querySnapshot = await getDocs(q);
 			data = querySnapshot.docs;
@@ -42,7 +41,7 @@
 			collection(db, Currentuser.displayName),
 			orderBy('timestamp', 'desc'),
 			startAfter(lastVisible),
-			limit(2)
+			limit(3)
 		);
 		const documentSnapshots = await getDocs(next);
 		data = documentSnapshots.docs;
@@ -51,7 +50,7 @@
 		firstDocument = documentSnapshots.docs[0];
 		if (firstDocument === undefined) {
 			setTimeout(async () => {
-				const q = query(collection(db, Currentuser.displayName), limit(2));
+				const q = query(collection(db, Currentuser.displayName), limit(3));
 				const querySnapshot = await getDocs(q);
 				data = querySnapshot.docs;
 				lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -63,7 +62,7 @@
 			collection(db, Currentuser.displayName),
 			orderBy('timestamp', 'desc'),
 			endBefore(firstDocument),
-			limit(2)
+			limit(3)
 		);
 		const documentSnapshots = await getDocs(next);
 		data = documentSnapshots.docs;
@@ -74,58 +73,83 @@
 	}
 </script>
 
-<div class="hero container">
+<div class="hero-container">
 	{#if Currentuser}
-		<div class="container">
-			<h5 class="grey-text">{Currentuser.displayName} Department :</h5>
-			<br />
-			{#if data}
-				{#if data.length == 0}
-					<p>No More Data to Show, Please Refresh here.</p>
-				{:else}
-					{#each Array.from(data) as doc (doc.id)}
-						<div class="card blue-grey darken-1 ">
-							<div class="card-content white-text">
-								<span class=" badge"><i class="material-icons">like</i></span>
-								<span class="card-title">{doc.data().title}</span>
-								<p>{doc.data().body}</p>
-							</div>
-							<div class="card-action">
-								<a href={`/suggestion/${doc.id}`}>View more</a>
-							</div>
+		{#if Currentuser.emailVerified || Currentuser.email.includes('admin')}
+			<div class="container">
+				<h5 class="grey-text">{Currentuser.displayName} Department :</h5>
+				<br />
+				{#if data}
+					{#if data.length == 0}
+						<p>No More Data to Show, Please Refresh here.</p>
+					{:else}
+						<div class="card-container">
+							{#each Array.from(data) as doc (doc.id)}
+								<div class="card">
+									<div class="card-content">
+										<span class=" badge"><i class="material-icons">like</i></span>
+										<span class="card-title">{doc.data().title}</span>
+										<p>{doc.data().body}</p>
+									</div>
+									<div class="card-action">
+										<a href={`/suggestion/${doc.id}`}>View more</a>
+									</div>
+								</div>
+							{/each}
 						</div>
-					{/each}
+					{/if}
 				{/if}
-			{/if}
-			<button class="btn blue" on:click={getNextDocument} disabled={much}>Next</button>
-			<button class="btn blue" on:click={getPrevDocument} disabled={much}>Prev</button>
-		</div>
-	{:else}
-		<div class="container">
-			{#if show}
-				<h4 class="center">Signing you In...</h4>
-				<div class="preloader-wrapper big active">
-					<div class="spinner-layer spinner-blue-only">
-						<div class="circle-clipper left">
-							<div class="circle" />
-						</div>
-						<div class="gap-patch">
-							<div class="circle" />
-						</div>
-						<div class="circle-clipper right">
-							<div class="circle" />
+				<div class="btn-container">
+					<button class="btn blue" on:click={getPrevDocument} disabled={much}
+						><i class="material-icons">chevron_left</i></button
+					>
+					<button class="btn blue" on:click={getNextDocument} disabled={much}
+						><i class="material-icons">chevron_right</i></button
+					>
+				</div>
+			</div>
+		{:else}
+			<div class="container">
+				{#if show}
+					<h4 class="center">Signing you In...</h4>
+					<div class="preloader-wrapper big active">
+						<div class="spinner-layer spinner-blue-only">
+							<div class="circle-clipper left">
+								<div class="circle" />
+							</div>
+							<div class="gap-patch">
+								<div class="circle" />
+							</div>
+							<div class="circle-clipper right">
+								<div class="circle" />
+							</div>
 						</div>
 					</div>
-				</div>
-			{:else}
-				<h5>Welcome to Suggestly</h5>
-				<a href="/signup">Please click this link to sign up</a>
-			{/if}
+				{:else}
+					<h5>Welcome to Suggestly</h5>
+					<p>Please Verify your Email,It has been sent to your inbox</p>
+				{/if}
+			</div>
+		{/if}
+	{:else}
+		<div class="container">
+			<p class="lead">Please Sign up Right Here <a href="/signup">Sign Up</a></p>
 		</div>
 	{/if}
 </div>
-
+``
 <style>
+	:global(body) {
+		height: 100vh;
+		overflow-y: scroll;
+	}
+	.hero-container {
+		height: 100vh;
+		position: relative;
+	}
+	.card-title {
+		font-weight: bold;
+	}
 	h4 {
 		color: #222;
 	}
@@ -135,15 +159,56 @@
 		/* background: blue; */
 	}
 	.card-content p {
-		width: 200px;
-		white-space: nowrap;
+		/**Major Properties**/
 		overflow: hidden;
+		line-height: 2rem;
+		max-height: 8rem;
+		-webkit-box-orient: vertical;
+		display: block;
+		display: -webkit-box;
+		overflow: hidden !important;
 		text-overflow: ellipsis;
+		-webkit-line-clamp: 4;
+	}
+	.card {
+		/* background-color: ghostwhite; */
+		border: 2.5px solid rgba(70, 78, 229, 0.541);
+		/* box-shadow: none !important; */
 	}
 	.card-title {
 		width: 200px;
 		white-space: nowrap;
 		overflow: hidden;
+
 		text-overflow: ellipsis;
+	}
+	.btn-container {
+		/* position:abslot. */
+		position: static;
+		z-index: 100;
+		bottom: 40px;
+	}
+	.card-action {
+		width: 100%;
+		padding: 5px;
+	}
+	.card-action a {
+		display: block;
+		width: 100%;
+		text-align: center;
+		background: rgb(5, 139, 188);
+		color: #fff !important;
+		padding: 10px 15px;
+		border-radius: 10px;
+	}
+	h5 {
+		text-transform: capitalize;
+	}
+	@media (min-width: 800px) {
+		.card-container {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+		}
 	}
 </style>

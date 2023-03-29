@@ -39,7 +39,8 @@
 			const docRef = await addDoc(collection(db, `${Cuser.displayName}/${data.id}/comment`), {
 				comment
 			});
-			M.toast({ html: 'Added, Refresh to see changes' });
+			M.toast({ html: 'Added, Refreshing....' });
+			window.location.reload();
 			// window.location.reload();
 		}
 	};
@@ -69,7 +70,9 @@
 					</form>
 				{/if}
 
-				<button class="btn red" on:click={handleClick}><i class="material-icons">delete</i></button>
+				<button class="btn red z-depth-0" on:click={handleClick}
+					><i class="material-icons">delete</i></button
+				>
 			{/if}
 		{/if}
 	{:else}
@@ -101,7 +104,7 @@
 	}
 	.btn.red {
 		position: fixed;
-		bottom: 70px;
+		bottom: 140px;
 		right: 40px;
 	}
 </style>
