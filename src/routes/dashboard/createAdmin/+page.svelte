@@ -12,7 +12,7 @@
 		onAuthStateChanged(auth, (user) => {
 			Cuser = user.email;
 			user2 = user;
-			console.log(Cuser, user);
+			
 		});
 	});
 	const handleSubmit = async (e) => {
@@ -21,7 +21,7 @@
 			alert("sorry admins can't make suggestions");
 			return;
 		} else {
-			console.log(Cuser);
+		
 			// debugger;
 			if (title && body) {
 				const docRef = await addDoc(collection(db, user2.displayName), {
